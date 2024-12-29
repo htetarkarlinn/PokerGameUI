@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,9 +25,10 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun InputLabel(
     modifier: Modifier = Modifier,
+    value: TextFieldValue = TextFieldValue(""),
+    onValueChange : (TextFieldValue)->Unit = {},
     label: String = "",
     placeholder: String = "",
-    textState: MutableState<String> = remember { mutableStateOf("") },
     hidden: Boolean = false
 ) {
     Column() {
@@ -36,8 +38,8 @@ fun InputLabel(
             fontSize = 16.sp
         )
         TextField(
-            value = textState.value,
-            onValueChange = { textState.value = it },
+            value = value,
+            onValueChange = onValueChange,
             visualTransformation = if (hidden) PasswordVisualTransformation() else VisualTransformation.None,
             modifier = modifier.border(
                 BorderStroke(1.dp, Color.DarkGray),
@@ -63,7 +65,7 @@ fun InputLabel(
 @Preview(showBackground = true)
 @Composable
 fun InputLabelPreview() {
-    InputLabel(Modifier, "Email")
+//    InputLabel(Modifier, "Email")
 }
 
 

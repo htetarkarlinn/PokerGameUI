@@ -1,6 +1,8 @@
 package com.example.pokergameui
 
+import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -8,18 +10,25 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.daveanthonythomas.moshipack.MoshiPack
 import com.example.pokergameui.ui.theme.InputLabel
 import com.example.pokergameui.ui.theme.Blue
 import com.example.pokergameui.ui.theme.Dark
 import com.example.pokergameui.ui.theme.PokerGameUITheme
+import okio.BufferedSource
 
 class SignInActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +37,7 @@ class SignInActivity : ComponentActivity() {
         setContent {
             PokerGameUITheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SignInBody(modifier = Modifier.padding(innerPadding))
+                    SignInBody(modifier = Modifier.padding(innerPadding), this)
                 }
             }
         }
@@ -36,7 +45,7 @@ class SignInActivity : ComponentActivity() {
 }
 
 @Composable
-fun SignInBody(modifier: Modifier = Modifier) {
+fun SignInBody(modifier: Modifier = Modifier, ctx: Context) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -45,7 +54,7 @@ fun SignInBody(modifier: Modifier = Modifier) {
     ) {
         SignInHeader()
         Spacer(modifier = Modifier.height(24.dp))
-        SignInForm(modifier = Modifier.fillMaxWidth())
+        SignInForm(modifier = Modifier.fillMaxWidth(), ctx)
     }
 }
 
@@ -89,13 +98,39 @@ fun SignInHeader(modifier: Modifier = Modifier) {
     }
 }
 
+data class LoginRequest(var username: String, var password: String)
+
 @Composable
-fun SignInForm(modifier: Modifier = Modifier) {
+fun SignInForm(modifier: Modifier = Modifier, ctx: Context) {
+    val moshiPack = MoshiPack()
+
+    var username by remember { mutableStateOf(TextFieldValue("")) }
+    var password by remember { mutableStateOf(TextFieldValue("")) }
+
+    fun handleSignin() {
+        var content: String = ""
+        if (username.text == "" || password.text == "") {
+            content = "Empty"
+        } else {
+            try {
+                // Attempt to pack the data and catch any exceptions
+                val packed: BufferedSource = moshiPack.pack(LoginRequest(username.text, password.text))
+                content = packed.readByteString().hex() // Convert the packed content to a hex string
+            } catch (e: Exception) {
+                content = "Error packing data: ${e.localizedMessage}"
+            }
+        }
+        val toast = Toast.makeText(ctx, content, Toast.LENGTH_LONG)
+        toast.show()
+    }
+
     Column(
         modifier = modifier
             .padding(vertical = 16.dp)
     ) {
         InputLabel(
+            onValueChange = { username = it },
+            value = username,
             label = "Email",
             placeholder = "Enter your email",
             modifier = Modifier.fillMaxWidth()
@@ -103,6 +138,8 @@ fun SignInForm(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(12.dp))
         InputLabel(
             label = "Password",
+            value = password,
+            onValueChange = {password = it},
             placeholder = "Enter your password",
             hidden = true,
             modifier = Modifier.fillMaxWidth()
@@ -110,7 +147,7 @@ fun SignInForm(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             colors = ButtonDefaults.buttonColors(containerColor = Blue),
-            onClick = { /* Handle sign-in logic */ },
+            onClick = { handleSignin() },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
@@ -133,10 +170,3 @@ fun SignInForm(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true, device = "id:pixel_8")
-@Composable
-fun SignInPreview() {
-    PokerGameUITheme {
-        SignInBody()
-    }
-}
