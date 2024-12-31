@@ -1,8 +1,7 @@
 package com.example.pokergameui
 
-import android.content.Context
 import android.os.Bundle
-import android.widget.Toast
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.daveanthonythomas.moshipack.MoshiPack
@@ -37,7 +35,7 @@ class SignInActivity : ComponentActivity() {
         setContent {
             PokerGameUITheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SignInBody(modifier = Modifier.padding(innerPadding), this)
+                    SignInBody(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -45,7 +43,7 @@ class SignInActivity : ComponentActivity() {
 }
 
 @Composable
-fun SignInBody(modifier: Modifier = Modifier, ctx: Context) {
+fun SignInBody(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -54,7 +52,7 @@ fun SignInBody(modifier: Modifier = Modifier, ctx: Context) {
     ) {
         SignInHeader()
         Spacer(modifier = Modifier.height(24.dp))
-        SignInForm(modifier = Modifier.fillMaxWidth(), ctx)
+        SignInForm(modifier = Modifier.fillMaxWidth())
     }
 }
 
@@ -98,30 +96,29 @@ fun SignInHeader(modifier: Modifier = Modifier) {
     }
 }
 
-data class LoginRequest(var username: String, var password: String)
+
+data class LoginRequest(var user: String = "", var pass: String = "")
 
 @Composable
-fun SignInForm(modifier: Modifier = Modifier, ctx: Context) {
-    val moshiPack = MoshiPack()
-
+fun SignInForm(modifier: Modifier = Modifier) {
     var username by remember { mutableStateOf(TextFieldValue("")) }
     var password by remember { mutableStateOf(TextFieldValue("")) }
 
     fun handleSignin() {
-        var content: String = ""
+        val moshiPack = MoshiPack()
+
         if (username.text == "" || password.text == "") {
-            content = "Empty"
+            Log.e("handle-signin", "Username or password are empty")
         } else {
             try {
                 // Attempt to pack the data and catch any exceptions
                 val packed: BufferedSource = moshiPack.pack(LoginRequest(username.text, password.text))
-                content = packed.readByteString().hex() // Convert the packed content to a hex string
+                val content = packed.readByteString().hex() // Convert the packed content to a hex string
+                Log.d("handle-signin", "Content: $content")
             } catch (e: Exception) {
-                content = "Error packing data: ${e.localizedMessage}"
+                Log.e("handle-signin", "error ${e.localizedMessage}")
             }
         }
-        val toast = Toast.makeText(ctx, content, Toast.LENGTH_LONG)
-        toast.show()
     }
 
     Column(

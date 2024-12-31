@@ -1,7 +1,11 @@
 package com.example.pokergameui
 
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -25,6 +29,18 @@ import androidx.compose.ui.unit.dp
 import com.example.pokergameui.ui.theme.PokerGameUITheme
 
 class StartActivity : ComponentActivity() {
+    private var tcpService: TcpService? = null
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            tcpService = (service as TcpService.LocalBinder).getService()
+            tcpService?.sendMessage("Hello from MainActivity!")
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            tcpService = null
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -42,6 +58,13 @@ class StartActivity : ComponentActivity() {
                 }
             }
         }
+
+        bindService(Intent(this, TcpService::class.java), connection, Context.BIND_AUTO_CREATE)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unbindService(connection)
     }
 }
 

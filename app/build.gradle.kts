@@ -39,12 +39,16 @@ android {
     }
 }
 
+configurations.all  {
+    resolutionStrategy {
+        force("org.jetbrains.kotlin:kotlin-stdlib:1.9.0") // Align with your Kotlin version
+        force("org.jetbrains.kotlin:kotlin-reflect:1.9.0") // Align with your Kotlin version
+    }
+}
+
 dependencies {
     val moshipack_ver = "1.0.1"
-    implementation("com.daveanthonythomas.moshipack:moshipack:$moshipack_ver") {
-        exclude(group = "org.jetbrains.kotlin", module = "kotlin-reflect")
-        exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
-    }
+    implementation("com.daveanthonythomas.moshipack:moshipack:$moshipack_ver")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
