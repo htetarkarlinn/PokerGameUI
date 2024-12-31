@@ -17,4 +17,5 @@ fun NavigationComponent(navController: NavHostController) {
         composable("poker_table") {
             PokerTableScreen()
         }
+    }
 }
