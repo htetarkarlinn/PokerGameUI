@@ -19,7 +19,7 @@ import com.example.pokergameui.ui.theme.PokerGameUITheme
 fun LobbyScreen(navController: NavHostController) {
     var showDialog by remember { mutableStateOf(false) } // Manage dialog visibility
 
-    
+
 }
 
 
