@@ -8,7 +8,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.pokergameui.ui.theme.PokerGameUITheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,6 +76,14 @@ fun PokerTableScreen() {
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true, device = "id:pixel_8")
+@Composable
+fun PokerTableScreenPreview() {
+    PokerGameUITheme {
+        PokerTableScreen()
     }
 }
 

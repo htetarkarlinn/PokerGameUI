@@ -8,9 +8,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.pokergameui.ui.theme.PokerGameUITheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,7 +45,10 @@ fun LobbyScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(16.dp))
             PlayButtonSection(
                 navController = navController,
-                onCreateTableClicked = { showDialog = true }
+                onCreateTableClicked = {
+
+                    showDialog = true
+                }
             )
         }
     }
@@ -251,3 +256,4 @@ fun PlayButtonSection(
         }
     }
 }
+

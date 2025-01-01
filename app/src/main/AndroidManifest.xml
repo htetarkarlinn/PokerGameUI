@@ -41,7 +41,13 @@
             android:theme="@style/Theme.PokerGameUI"
             >
         </activity>
-
+        <activity
+            android:name=".InGameActivity"
+            android:screenOrientation="landscape"
+            android:exported="true"
+            android:theme="@style/Theme.PokerGameUI"
+            >
+        </activity>
 
     </application>
 

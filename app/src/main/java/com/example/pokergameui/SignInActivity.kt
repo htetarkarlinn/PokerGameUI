@@ -1,5 +1,6 @@
 package com.example.pokergameui
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -19,14 +20,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import com.daveanthonythomas.moshipack.MoshiPack
 import com.example.pokergameui.ui.theme.InputLabel
 import com.example.pokergameui.ui.theme.Blue
 import com.example.pokergameui.ui.theme.Dark
 import com.example.pokergameui.ui.theme.PokerGameUITheme
 import okio.BufferedSource
+
 
 class SignInActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,7 +112,9 @@ fun SignInForm(modifier: Modifier = Modifier) {
         val moshiPack = MoshiPack()
 
         if (username.text == "" || password.text == "") {
+
             Log.e("handle-signin", "Username or password are empty")
+
         } else {
             try {
                 // Attempt to pack the data and catch any exceptions
@@ -167,3 +173,10 @@ fun SignInForm(modifier: Modifier = Modifier) {
     }
 }
 
+@Preview(showBackground = true, showSystemUi = true, device = "id:pixel_8")
+@Composable
+fun SignInPreview() {
+    PokerGameUITheme {
+        SignInBody()
+    }
+}
