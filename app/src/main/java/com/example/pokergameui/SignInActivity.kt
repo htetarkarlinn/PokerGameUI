@@ -23,14 +23,12 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
 import com.daveanthonythomas.moshipack.MoshiPack
 import com.example.pokergameui.ui.theme.InputLabel
 import com.example.pokergameui.ui.theme.Blue
 import com.example.pokergameui.ui.theme.Dark
 import com.example.pokergameui.ui.theme.PokerGameUITheme
 import okio.BufferedSource
-
 
 class SignInActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +37,24 @@ class SignInActivity : ComponentActivity() {
         setContent {
             PokerGameUITheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SignInBody(modifier = Modifier.padding(innerPadding))
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        SignInHeader()
+                        Spacer(modifier = Modifier.height(24.dp))
+                        SignInForm(
+                            modifier = Modifier.fillMaxWidth(),
+                            handleSignIn = {
+                                startActivity(Intent(this@SignInActivity, LobbyActivity::class.java))
+                            },
+                            handleForgetPassWord = {
+                                startActivity(Intent(this@SignInActivity, LobbyActivity::class.java))
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -104,7 +119,7 @@ fun SignInHeader(modifier: Modifier = Modifier) {
 data class LoginRequest(var user: String = "", var pass: String = "")
 
 @Composable
-fun SignInForm(modifier: Modifier = Modifier) {
+fun SignInForm(modifier: Modifier = Modifier, handleSignIn: () -> Unit = {}, handleForgetPassWord: () -> Unit = {}) {
     var username by remember { mutableStateOf(TextFieldValue("")) }
     var password by remember { mutableStateOf(TextFieldValue("")) }
 
@@ -150,7 +165,7 @@ fun SignInForm(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             colors = ButtonDefaults.buttonColors(containerColor = Blue),
-            onClick = { handleSignin() },
+            onClick = { handleSignIn() },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
@@ -167,7 +182,7 @@ fun SignInForm(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .clickable {
-                    // Handle forgot password logic
+                    handleForgetPassWord()
                 }
         )
     }

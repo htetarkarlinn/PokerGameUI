@@ -50,8 +50,8 @@ class StartActivity : ComponentActivity() {
                     StartActivityBody(
                         modifier = Modifier.padding(innerPadding),
                         handleSignIn = {
-                            //startActivity(Intent(this, SignInActivity::class.java))
-                            startActivity(Intent(this, InGameActivity::class.java))
+                            startActivity(Intent(this, SignInActivity::class.java))
+                            //startActivity(Intent(this, InGameActivity::class.java))
                         },
                         handleSignUp = {
                             startActivity(Intent(this, SignUpActivity::class.java))}

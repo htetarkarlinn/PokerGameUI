@@ -48,6 +48,12 @@
             android:theme="@style/Theme.PokerGameUI"
             >
         </activity>
+        <activity
+            android:name=".LobbyActivity"
+            android:exported="true"
+            android:theme="@style/Theme.PokerGameUI"
+            >
+        </activity>
 
     </application>
 
