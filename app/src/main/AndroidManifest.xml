@@ -11,12 +11,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PokerGameUI"
-        tools:targetApi="34">
+        tools:targetApi="31">
+        <activity
+            android:screenOrientation="userLandscape"
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.PokerGameUI"
+           >
+
+        </activity>
 
        <activity
             android:name=".StartActivity"
             android:screenOrientation="userLandscape"
             android:exported="true"
+            android:label="@string/app_name"
             android:theme="@style/Theme.PokerGameUI"
             >
             <intent-filter>
@@ -30,6 +40,7 @@
             android:name=".SignUpActivity"
             android:screenOrientation="userPortrait"
             android:exported="true"
+            android:label="@string/app_name"
             android:theme="@style/Theme.PokerGameUI"
             >
 
@@ -38,6 +49,7 @@
             android:name=".SignInActivity"
             android:screenOrientation="userPortrait"
             android:exported="true"
+            android:label="@string/app_name"
             android:theme="@style/Theme.PokerGameUI"
             >
         </activity>
