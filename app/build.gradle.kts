@@ -47,6 +47,7 @@ configurations.all  {
 }
 
 dependencies {
+    implementation(libs.androidx.constraintlayout)
     val moshipack_ver = "1.0.1"
     implementation("com.daveanthonythomas.moshipack:moshipack:$moshipack_ver")
     implementation(libs.androidx.core.ktx)
