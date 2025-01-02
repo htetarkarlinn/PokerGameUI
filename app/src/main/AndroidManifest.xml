@@ -66,6 +66,15 @@
             android:theme="@style/Theme.PokerGameUI"
             >
         </activity>
+        <activity
+            android:name=".JoinActivity"
+            android:exported="true"
+            android:theme="@style/Theme.PokerGameUI"/>
+        <activity
+            android:name=".CreateActivity"
+            android:exported="true"
+            android:theme="@style/Theme.PokerGameUI"/>
+
 
     </application>
 

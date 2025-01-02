@@ -16,16 +16,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,7 +35,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 
 @OptIn(ExperimentalMaterial3Api::class)
 class LobbyActivity : ComponentActivity() {
@@ -73,11 +69,12 @@ class LobbyActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.height(16.dp))
                     PlayButtonSection(
                         onCreateTableClicked = {
-                            startActivity(Intent(this@LobbyActivity, InGameActivity::class.java))
-                            //showDialog = true
+                            startActivity(Intent(this@LobbyActivity, CreateActivity::class.java))
+
                         },
                         onJoinTableClicked = {
-                            showDialog = true
+                            startActivity(Intent(this@LobbyActivity, JoinActivity::class.java))
+
                         },
                         onClickGameRule = {
                             val youtubeUrl = "https://www.youtube.com/watch?v=JOomXP-r1wY" // Replace with your YouTube URL
@@ -88,15 +85,7 @@ class LobbyActivity : ComponentActivity() {
                 }
             }
 
-            // Show PokerTableDialog when showDialog is true
-            if (showDialog) {
-                PokerTableDialog(
-                    onDismiss = { showDialog = false },
-                    onCreate = { tableName, numberOfPlayers, minBet ->
-                        startActivity(Intent(this, InGameActivity::class.java))
-                    }
-                )
-            }
+
         }
     }
 }
@@ -197,63 +186,6 @@ fun FriendListSection() {
 
 
 @Composable
-fun PokerTableDialog(
-    onDismiss: () -> Unit,
-    onCreate: (String, Int, Int) -> Unit
-) {
-    var tableName by remember { mutableStateOf("") }
-    var numberOfPlayers by remember { mutableStateOf("") }
-    var minBet by remember { mutableStateOf("") }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text("Create Poker Table", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = tableName,
-                    onValueChange = { tableName = it },
-                    label = { Text("Table Name") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = numberOfPlayers,
-                    onValueChange = { numberOfPlayers = it },
-                    label = { Text("Number of Players") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = minBet,
-                    onValueChange = { minBet = it },
-                    label = { Text("Min Bet") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    val players = numberOfPlayers.toIntOrNull() ?: 0
-                    val bet = minBet.toIntOrNull() ?: 0
-                    onCreate(tableName, players, bet)
-                }
-            ) {
-                Text("Create")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
-    )
-}
-
-@Composable
 fun PlayButtonSection( onCreateTableClicked: () -> Unit, onJoinTableClicked: () -> Unit, onClickGameRule: () -> Unit  ) {
     Column(
         modifier = Modifier
@@ -272,7 +204,7 @@ fun PlayButtonSection( onCreateTableClicked: () -> Unit, onJoinTableClicked: () 
                 contentColor = Color.White
             )
         ) {
-            Text("Join a Poker Table", fontSize = 16.sp)
+            Text("Join Poker", fontSize = 16.sp)
         }
 
         Button(
@@ -286,7 +218,7 @@ fun PlayButtonSection( onCreateTableClicked: () -> Unit, onJoinTableClicked: () 
                 contentColor = Color.White
             )
         ) {
-            Text("Create a Poker Table", fontSize = 16.sp)
+            Text("Create Poker", fontSize = 16.sp)
         }
 
         Button(
