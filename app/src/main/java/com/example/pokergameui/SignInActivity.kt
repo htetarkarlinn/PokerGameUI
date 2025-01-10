@@ -1,5 +1,6 @@
 package com.example.pokergameui
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -114,7 +115,6 @@ fun SignInForm(modifier: Modifier = Modifier) {
                 // Attempt to pack the data and catch any exceptions
                 val packed: BufferedSource = moshiPack.pack(LoginRequest(username.text, password.text))
                 val content = packed.readByteString().hex() // Convert the packed content to a hex string
-                Log.d("handle-signin", "Content: $content")
             } catch (e: Exception) {
                 Log.e("handle-signin", "error ${e.localizedMessage}")
             }
