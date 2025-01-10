@@ -28,9 +28,73 @@ import com.example.pokergameui.ui.theme.InputLabel
 import com.example.pokergameui.ui.theme.Blue
 import com.example.pokergameui.ui.theme.Dark
 import com.example.pokergameui.ui.theme.PokerGameUITheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okio.BufferedSource
+import kotlin.reflect.jvm.internal.impl.builtins.UnsignedType
 
 class SignInActivity : ComponentActivity() {
+    private fun handle_signin(username: String, password: String): Unit {
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                val msg = Protocol.encode(1, 100, LoginRequest(username, password))
+                if (msg == null) {
+                    Log.e("handle-signin", "failed to encode message")
+                    return@launch
+                }
+
+                val success = withContext(Dispatchers.IO) {
+                    TCPConnectionManager.send(msg)
+                }
+
+                if (!success) {
+                    Log.e("handle-signin", "failed to send message")
+                    return@launch
+                }
+
+                val response = withContext(Dispatchers.IO) {
+                    TCPConnectionManager.receive()
+                }
+
+                if (response == null) {
+                    Log.e("handle-signin", "failed to receive response")
+                    return@launch
+                }
+
+                val status = Protocol.decode<BaseResponse>(response)
+
+                if (status == null) {
+                    Log.e("handle-signin", "failed to decode response")
+                    return@launch
+                }
+
+                val header = status.header
+                val payload = status.payload
+
+                if (header == null || payload == null) {
+                    Log.e("handle-signin", "failed to decode response")
+                    return@launch
+                }
+
+                if (payload.res == 101) {
+                    Log.d("handle-signin", "login success")
+                    return@launch
+                } else {
+                    Log.e("handle-signin", "login failed")
+                }
+
+
+            } catch (e: Exception) {
+                Log.e("handle-signin", "error ${e.localizedMessage}")
+            }
+        }
+        // Send it to servver then get response and check response
+        startActivity(Intent(this@SignInActivity, LobbyActivity::class.java))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -40,6 +104,7 @@ class SignInActivity : ComponentActivity() {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
+                            .padding(innerPadding)
                             .padding(horizontal = 16.dp),
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -47,11 +112,14 @@ class SignInActivity : ComponentActivity() {
                         Spacer(modifier = Modifier.height(24.dp))
                         SignInForm(
                             modifier = Modifier.fillMaxWidth(),
-                            handleSignIn = {
-                                startActivity(Intent(this@SignInActivity, LobbyActivity::class.java))
-                            },
+                            handleSignIn = ::handle_signin,
                             handleForgetPassWord = {
-                                startActivity(Intent(this@SignInActivity, LobbyActivity::class.java))
+                                startActivity(
+                                    Intent(
+                                        this@SignInActivity,
+                                        LobbyActivity::class.java
+                                    )
+                                )
                             }
                         )
                     }
@@ -116,31 +184,15 @@ fun SignInHeader(modifier: Modifier = Modifier) {
 }
 
 
-data class LoginRequest(var user: String = "", var pass: String = "")
-
 @Composable
-fun SignInForm(modifier: Modifier = Modifier, handleSignIn: () -> Unit = {}, handleForgetPassWord: () -> Unit = {}) {
+fun SignInForm(
+    modifier: Modifier = Modifier,
+    handleSignIn: (String, String) -> Unit = { _, _ -> },
+    handleForgetPassWord: () -> Unit = {}
+) {
     var username by remember { mutableStateOf(TextFieldValue("")) }
     var password by remember { mutableStateOf(TextFieldValue("")) }
 
-    fun handleSignin() {
-        val moshiPack = MoshiPack()
-
-        if (username.text == "" || password.text == "") {
-
-            Log.e("handle-signin", "Username or password are empty")
-
-        } else {
-            try {
-                // Attempt to pack the data and catch any exceptions
-                val packed: BufferedSource = moshiPack.pack(LoginRequest(username.text, password.text))
-                val content = packed.readByteString().hex() // Convert the packed content to a hex string
-                Log.d("handle-signin", "Content: $content")
-            } catch (e: Exception) {
-                Log.e("handle-signin", "error ${e.localizedMessage}")
-            }
-        }
-    }
 
     Column(
         modifier = modifier
@@ -157,7 +209,7 @@ fun SignInForm(modifier: Modifier = Modifier, handleSignIn: () -> Unit = {}, han
         InputLabel(
             label = "Password",
             value = password,
-            onValueChange = {password = it},
+            onValueChange = { password = it },
             placeholder = "Enter your password",
             hidden = true,
             modifier = Modifier.fillMaxWidth()
@@ -165,7 +217,7 @@ fun SignInForm(modifier: Modifier = Modifier, handleSignIn: () -> Unit = {}, han
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             colors = ButtonDefaults.buttonColors(containerColor = Blue),
-            onClick = { handleSignIn() },
+            onClick = { handleSignIn(username.text, password.text) },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
