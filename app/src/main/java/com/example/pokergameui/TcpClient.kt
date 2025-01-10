@@ -1,81 +1,128 @@
 package com.example.pokergameui
 
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.OutputStream
+import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.*
 import java.net.Socket
-import java.net.SocketTimeoutException
+import java.net.SocketException
 
-class TcpClient(
-    private val serverAddress: String,
-    private val serverPort: Int,
-    private val timeout: Int = 5000 // Optional timeout in milliseconds
-) {
+class TCPClient(private val host: String, private val port: Int) {
     private var socket: Socket? = null
-    private var output: OutputStream? = null
-    private var input: BufferedReader? = null
+    private var outputStream: OutputStream? = null
+    private var inputStream: InputStream? = null
 
-    /**
-     * Connect to the server
-     */
-    fun connect(): Boolean {
-        return try {
-            socket = Socket(serverAddress, serverPort).apply {
-                soTimeout = timeout
-            }
-            output = socket?.getOutputStream()
-            input = BufferedReader(InputStreamReader(socket?.getInputStream()))
-            true
-        } catch (e: Exception) {
-            println("Error connecting to server: ${e.message}")
-            false
-        }
-    }
-
-    /**
-     * Send a message to the server
-     */
-    fun sendMessage(message: String): Boolean {
-        return try {
-            if (output != null) {
-                output?.write("$message\n".toByteArray())
-                output?.flush()
+    // Connect to the server
+    suspend fun connect(): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                socket = Socket(host, port)
+                outputStream = socket?.getOutputStream()
+                inputStream = socket?.getInputStream()
+                Log.d("TCPClient", "Connected to server: $host:$port")
                 true
-            } else {
-                println("Error: Not connected to the server.")
+            } catch (e: Exception) {
+                Log.e("TCPClient", "Connection error: ${e.localizedMessage}")
                 false
             }
-        } catch (e: Exception) {
-            println("Error sending message: ${e.message}")
-            false
         }
     }
 
-    /**
-     * Receive a response from the server
-     */
-    fun receiveMessage(): String? {
-        return try {
-            input?.readLine()
-        } catch (e: SocketTimeoutException) {
-            println("Timeout while waiting for response.")
-            null
-        } catch (e: Exception) {
-            println("Error receiving message: ${e.message}")
-            null
+    // Send data to the server
+    suspend fun send(data: ByteArray): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                if (outputStream == null) {
+                    Log.e("TCPClient", "OutputStream is null, cannot send data")
+                    false
+                }
+
+                if (socket == null || socket?.isClosed == true) {
+                    Log.e("TCPClient", "Socket is closed or null, cannot send data")
+                    false
+                }
+                Log.d("TCPClient", "Sending data of size: ${data.size} bytes")
+                outputStream?.write(data, 0, data.size)
+                outputStream?.flush()
+                Log.d("TCPClient", "Data sent successfully")
+                true
+            } catch (e: IOException) {
+                Log.e("TCPClient", "IO error while sending data: ${e.localizedMessage}")
+                e.printStackTrace()
+                false
+            } catch (e: SocketException) {
+                Log.e("TCPClient", "Socket error while sending data: ${e.localizedMessage}")
+                e.printStackTrace()
+                false
+            } catch (e: Exception) {
+                Log.e("TCPClient", "Unexpected error while sending data: ${e.localizedMessage}")
+                e.printStackTrace()
+                false
+            }
         }
     }
 
-    /**
-     * Disconnect from the server
-     */
-    fun disconnect() {
+    // Receive data from the server
+    suspend fun receive(): ByteArray? {
+        return withContext(Dispatchers.IO){
         try {
-            input?.close()
-            output?.close()
-            socket?.close()
+            val buffer = ByteArray(4096)
+            val bytesRead = inputStream?.read(buffer)
+            if (bytesRead == -1) {
+                Log.e("TCPClient", "End of stream reached")
+                return@withContext null
+            }
+            Log.d("TCPClient", "Received data of size: $bytesRead bytes")
+            buffer.copyOf(bytesRead!!)
         } catch (e: Exception) {
-            println("Error closing connection: ${e.message}")
+            Log.e("TCPClient", "Receive error: ${e.localizedMessage}")
+            null
+        }}
+    }
+
+    // Close the connection
+    suspend fun disconnect() {
+        withContext(Dispatchers.IO) {
+            try {
+                outputStream?.close()
+                inputStream?.close()
+                socket?.close()
+                Log.d("TCPClient", "Disconnected from server")
+            } catch (e: Exception) {
+                Log.e("TCPClient", "Disconnect error: ${e.localizedMessage}")
+            }
+        }
+    }
+}
+
+object TCPConnectionManager {
+    private var tcpClient: TCPClient? = null
+
+    suspend fun connect(host: String, port: Int): Boolean {
+        return withContext(Dispatchers.IO) {
+            if (tcpClient == null) {
+                tcpClient = TCPClient(host, port)
+            }
+            tcpClient?.connect() ?: false
+        }
+    }
+
+    suspend fun send(data: ByteArray): Boolean {
+        return withContext(Dispatchers.IO) {
+            tcpClient?.send(data) ?: false
+        }
+    }
+
+    suspend fun receive(): ByteArray? {
+        return withContext(Dispatchers.IO) {
+            tcpClient?.receive()
+        }
+    }
+
+    suspend fun disconnect() {
+        withContext(Dispatchers.IO) {
+            tcpClient?.disconnect()
+            tcpClient = null
         }
     }
 }

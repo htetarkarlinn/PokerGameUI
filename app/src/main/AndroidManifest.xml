@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,12 +12,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PokerGameUI"
-        tools:targetApi="34">
-
+        tools:targetApi="31">
        <activity
             android:name=".StartActivity"
             android:screenOrientation="userLandscape"
             android:exported="true"
+            android:label="@string/app_name"
             android:theme="@style/Theme.PokerGameUI"
             >
             <intent-filter>
@@ -30,6 +31,7 @@
             android:name=".SignUpActivity"
             android:screenOrientation="userPortrait"
             android:exported="true"
+            android:label="@string/app_name"
             android:theme="@style/Theme.PokerGameUI"
             >
 
@@ -38,9 +40,31 @@
             android:name=".SignInActivity"
             android:screenOrientation="userPortrait"
             android:exported="true"
+            android:label="@string/app_name"
             android:theme="@style/Theme.PokerGameUI"
             >
         </activity>
+        <activity
+            android:name=".InGameActivity"
+            android:screenOrientation="landscape"
+            android:exported="true"
+            android:theme="@style/Theme.PokerGameUI"
+            >
+        </activity>
+        <activity
+            android:name=".LobbyActivity"
+            android:exported="true"
+            android:theme="@style/Theme.PokerGameUI"
+            >
+        </activity>
+        <activity
+            android:name=".JoinActivity"
+            android:exported="true"
+            android:theme="@style/Theme.PokerGameUI"/>
+        <activity
+            android:name=".CreateActivity"
+            android:exported="true"
+            android:theme="@style/Theme.PokerGameUI"/>
 
 
     </application>
