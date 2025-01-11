@@ -1,48 +1,59 @@
-package com.example.pokergameui
+package com.example.pokergameui.view
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pokergameui.ui.theme.InputLabel
 import com.example.pokergameui.ui.theme.Blue
-import com.example.pokergameui.ui.theme.PokerGameUITheme
+import com.example.pokergameui.ui.theme.InputLabel
 
-class SignUpActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            PokerGameUITheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SignUpBody(modifier = Modifier.padding(innerPadding))
-                }
-            }
-        }
-    }
-}
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpBody(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        SignUpHeader()
-        Spacer(modifier = Modifier.height(16.dp))
-        SignUpForm(modifier = Modifier.fillMaxWidth())
+fun SignUpScreen(onBackPressed: () -> Unit) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Sign Up") },
+                navigationIcon = {
+                    IconButton(onClick = onBackPressed) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            SignUpHeader()
+            Spacer(modifier = Modifier.height(16.dp))
+            SignUpForm(modifier = Modifier.fillMaxWidth())
+        }
     }
 }
 
@@ -72,7 +83,11 @@ fun SignUpForm(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(8.dp))
         InputLabel(label = "Email", placeholder = "Enter your email", modifier = modifier)
         Spacer(modifier = Modifier.height(8.dp))
-        InputLabel(label = "Phone Number", placeholder = "Enter your phone number", modifier = modifier)
+        InputLabel(
+            label = "Phone Number",
+            placeholder = "Enter your phone number",
+            modifier = modifier
+        )
         Spacer(modifier = Modifier.height(8.dp))
         InputLabel(label = "Username", placeholder = "Enter your username", modifier = modifier)
         Spacer(modifier = Modifier.height(8.dp))
@@ -101,13 +116,5 @@ fun SignUpForm(modifier: Modifier = Modifier) {
                 fontWeight = FontWeight.SemiBold
             )
         }
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, device = "id:pixel_8")
-@Composable
-fun SignUpPreview() {
-    PokerGameUITheme {
-        SignUpBody()
     }
 }

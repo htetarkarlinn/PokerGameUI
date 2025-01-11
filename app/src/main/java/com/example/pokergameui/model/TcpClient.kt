@@ -1,4 +1,4 @@
-package com.example.pokergameui
+package com.example.pokergameui.model
 
 import android.util.Log
 import kotlinx.coroutines.Dispatchers

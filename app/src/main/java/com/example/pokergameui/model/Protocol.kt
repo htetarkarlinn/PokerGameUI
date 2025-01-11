@@ -1,4 +1,4 @@
-package com.example.pokergameui
+package com.example.pokergameui.model
 
 import android.util.Log
 import com.daveanthonythomas.moshipack.MoshiPack
@@ -6,14 +6,14 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 data class Header(val packetLen: Short, val protocolVer: Byte, val packetType: Short)
-data class Packet<T>(val header: Header, val payload: T)
+data class Packet<T>(val header: Header = Header(0, 0, 0), val payload: T? = null)
 data class LoginRequest(val user: String, val pass: String)
 data class BaseResponse(val res : Int)
 
 class Protocol {
     companion object {
-        const val LOGIN: Short = 100
-        const val SIGNUP: Short = 200
+        const val LOGIN = 100
+        const val SIGNUP = 200
 
         inline fun <reified T> encode(
             protocolVersion: Int,
@@ -37,7 +37,7 @@ class Protocol {
             }
         }
 
-        inline fun <reified T> decode(data: ByteArray): Packet<T>? {
+        inline fun <reified T> decode(data: ByteArray): Packet<T> {
             return try {
                 val buffer = ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN)
                 val packetLen = buffer.getShort()
@@ -48,7 +48,7 @@ class Protocol {
                 Packet(Header(packetLen, protocolVer, packetType), payload)
             } catch (e: Exception) {
                 Log.e("Protocol", "Decode error: ${e.localizedMessage}")
-                null
+                Packet()
             }
         }
     }
