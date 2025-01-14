@@ -368,7 +368,7 @@ fun OverlappingImages(imageRes1: Int, imageRes2: Int) {
 }*/
 
 
-package com.example.pokergameui
+package com.example.pokergameui.view
 
 import android.app.Activity
 import android.os.Bundle
@@ -394,6 +394,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.pokergameui.R
 
 class InGameActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
