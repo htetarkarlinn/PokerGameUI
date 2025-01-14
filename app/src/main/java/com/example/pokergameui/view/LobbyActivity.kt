@@ -106,7 +106,7 @@ fun NavGraphBuilder.addCreateTableScreen(navController: NavController) {
                     "CreateTable",
                     "Table: $tableName, Players: $numberOfPlayers, Min Bet: $minBet"
                 )
-                navController.navigate("lobby")
+                navController.navigate("Lobby")
             }
         )
     }
